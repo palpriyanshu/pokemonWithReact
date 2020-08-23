@@ -1,61 +1,65 @@
 class Pokemon extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { loaded: false };
+    this.state = { loaded: false, frontImage: true };
+    this.toggleImage = this.toggleImage.bind(this);
   }
+
   componentDidMount() {
-    console.log('hi');
     fetch(`http://pokeapi.co/api/v2/pokemon/${this.props.id}`)
       .then((details) => details.json())
       .then(({ name, sprites }) => {
-        console.log(name, sprites);
-        this.setState((state) => ({
-          pokemon: {
-            name,
-            imageUrl: sprites.front_default,
-          },
-          loaded: true,
-        }));
+        const { front_default: frontImg, back_default: backImg } = sprites;
+        const pokemon = { name, frontImg, backImg };
+        this.setState(() => ({ pokemon, loaded: true }));
       });
   }
+
+  toggleImage() {
+    this.setState((state) => ({ frontImage: !state.frontImage }));
+  }
+
   render() {
     if (!this.state.loaded) {
       return React.createElement('p', null, 'loading...');
     }
-    const name = React.createElement(
-      'p',
-      { style: { color: 'red' } },
-      this.state.pokemon.name
-    );
+
+    const { name, frontImg, backImg } = this.state.pokemon;
+    const nameBox = React.createElement('p', null, name.toUpperCase());
+    const src = this.state.frontImage ? frontImg : backImg;
+
     const image = React.createElement('img', {
-      src: this.state.pokemon.imageUrl,
-      alt: 'pokeImage',
+      onClick: this.toggleImage,
+      src,
+      style: { cursor: 'pointer' },
     });
-    return React.createElement(
-      'div',
-      { style: { border: '1px solid black', borderRadius: '4px' } },
-      name,
-      image
-    );
+
+    const boxStyle = {
+      width: '140px',
+      boxShadow: '0 0 4px 4px rgb(220,220,220)',
+      borderRadius: '4px',
+      margin: '15px',
+    };
+    return React.createElement('div', { style: boxStyle }, nameBox, image);
   }
 }
-const Card = (props) =>
-  React.createElement(
-    'div',
-    {
-      style: {
-        display: 'flex',
-        justifyContent: 'space-evenly',
-        textAlign: 'center',
-      },
-    },
-    props.children
-  );
+
+const Card = function (props) {
+  const style = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    textAlign: 'center',
+  };
+  return React.createElement('div', { style }, props.children);
+};
+
 const main = function () {
   const mainContainer = document.getElementById('main_container');
-  const pokemons = [1, 2, 3, 4, 5].map((id) =>
+  const pokemonIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const pokemons = pokemonIds.map((id) =>
     React.createElement(Pokemon, { id, key: id })
   );
   ReactDOM.render(React.createElement(Card, null, pokemons), mainContainer);
 };
+
 main();
