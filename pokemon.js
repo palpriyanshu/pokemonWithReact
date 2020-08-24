@@ -34,13 +34,13 @@ class Pokemon extends React.Component {
       style: { cursor: 'pointer' },
     });
 
-    const boxStyle = {
+    const cardStyle = {
       width: '140px',
       boxShadow: '0 0 4px 4px rgb(220,220,220)',
       borderRadius: '4px',
       margin: '15px',
     };
-    return React.createElement('div', { style: boxStyle }, nameBox, image);
+    return React.createElement('div', { style: cardStyle }, nameBox, image);
   }
 }
 
